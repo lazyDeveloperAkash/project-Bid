@@ -68,8 +68,11 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       const { confirmPassword, ...userData } = data;
-      if (data.password === confirmPassword) return;
-      
+      if (data.password !== confirmPassword) {
+        toast.error("Password mismatched");
+        return;
+      }
+
       await dispatch(authSignUp(userData) as any);
 
       if (data.userType === "BUYER") {
