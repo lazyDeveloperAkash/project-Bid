@@ -10,9 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { authSignIn } from "@/redux/action/userAction"
 
 const formSchema = z.object({
@@ -27,8 +26,6 @@ export default function SignInPage() {
   const router = useRouter()
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
-
-  console.log(isLoading,"load");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,8 +47,8 @@ export default function SignInPage() {
         } else {
           router.push("/seller/dashboard")
         }
-    } catch (error) {
-      toast.error("Sign in failed")
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Sign in failed")
     } finally {
       setIsLoading(false)
     }

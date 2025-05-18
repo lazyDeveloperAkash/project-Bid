@@ -106,7 +106,7 @@ export default function ProjectDetailsPage() {
   const onBidSubmit = async (data: BidFormValues) => {
     setIsSubmitting(true);
     try {
-      const resultAction = await dispatch(
+      await dispatch(
         asCreateBid(id as string, data) as any
       );
     } catch (error) {
@@ -142,7 +142,7 @@ export default function ProjectDetailsPage() {
         formData.append("files", selectedFiles[i]);
       }
 
-      const resultAction = await dispatch(
+      await dispatch(
         asUploadDeliverables(id as string, formData) as any
       );
     } catch (error) {

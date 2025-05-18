@@ -48,8 +48,8 @@ export default function ProjectDetailsPage() {
       if (resultAction) 
         toast.success("Seller selected successfully")
       
-    } catch (error) {
-      toast.error("Failed to select seller")
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to select seller")
     }
   }
 

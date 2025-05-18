@@ -68,16 +68,17 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       const { confirmPassword, ...userData } = data;
-
-      const resultAction = await dispatch(authSignUp(userData) as any);
+      if (data.password === confirmPassword) return;
+      
+      await dispatch(authSignUp(userData) as any);
 
       if (data.userType === "BUYER") {
         router.push("/buyer/dashboard");
       } else {
         router.push("/seller/dashboard");
       }
-    } catch (error) {
-      toast.error("Sign up failed");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Sign up failed");
     } finally {
       setIsLoading(false);
     }

@@ -12,12 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Bell, LogOut, Menu, User } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
-import { authFetchCurrent, authLogout } from "@/redux/action/userAction"
+import { authLogout } from "@/redux/action/userAction"
 
 export function Navbar() {
   const { user } = useSelector((state: any) => state.user)
