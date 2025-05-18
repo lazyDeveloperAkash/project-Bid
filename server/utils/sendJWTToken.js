@@ -5,7 +5,7 @@ const cookieOptions = {
     Date.now() + process.env.COOKIE_EXIPRES * 24 * 60 * 60 * 1000
   ),
   httpOnly: true,
-  secure: process.env.NODE_ENV != "developement",
+  secure: true,
 };
 
 exports.SendToken = (user, statuscode, res, messge) => {
