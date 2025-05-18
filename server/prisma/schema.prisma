@@ -1,0 +1,101 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  name             String
+  password         String
+  userType         UserType
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  projects         Project[] // Projects created by user (as buyer)
+  bids             Bid[] // Bids placed by user (as seller)
+  assignedProjects Project[] @relation("SellerProject")
+  ratings          Rating[]  @relation("ReceivedRatings")
+  givenRatings     Rating[]  @relation("GivenRatings")
+}
+
+enum UserType {
+  BUYER
+  SELLER
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  budgetMin   Float
+  budgetMax   Float
+  deadline    DateTime
+  status      ProjectStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  buyerId       String
+  buyer         User           @relation(fields: [buyerId], references: [id])
+  sellerId      String?
+  seller        User?          @relation("SellerProject", fields: [sellerId], references: [id])
+  bids          Bid[]
+  statusUpdates StatusUpdate[]
+  deliverables  String[]
+  rating        Rating?
+}
+
+enum ProjectStatus {
+  PENDING // Open for bids
+  IN_PROGRESS // Seller selected, work started
+  CONFIRM //seller confirm the stae
+  COMPLETED // Project completed
+  CANCELLED // Project cancelled
+}
+
+model Bid {
+  id                String   @id @default(uuid())
+  amount            Float
+  estimatedDuration Int // in days
+  message           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  sellerId  String
+  seller    User    @relation(fields: [sellerId], references: [id])
+}
+
+model StatusUpdate {
+  id        String        @id @default(uuid())
+  status    ProjectStatus
+  comment   String?
+  createdAt DateTime      @default(now())
+
+  // Relations
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  score     Int // 1-5 star rating
+  comment   String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  projectId  String  @unique // One rating per project
+  project    Project @relation(fields: [projectId], references: [id])
+  fromUserId String
+  fromUser   User    @relation("GivenRatings", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User    @relation("ReceivedRatings", fields: [toUserId], references: [id])
+}
