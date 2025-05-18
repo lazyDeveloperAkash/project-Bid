@@ -6,6 +6,7 @@ const cookieOptions = {
   ),
   httpOnly: true,
   secure: true,
+  sameSite: 'none',
 };
 
 exports.SendToken = (user, statuscode, res, messge) => {
