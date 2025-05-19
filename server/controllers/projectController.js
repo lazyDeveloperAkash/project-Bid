@@ -83,6 +83,12 @@ exports.getAllProjects = catchAsyncErrors(async (req, res, next) => {
           name: true,
         },
       },
+      rating: {
+        select: {
+          score: true,
+          comment: true,
+        },
+      },
       _count: {
         select: {
           bids: true,
@@ -110,6 +116,12 @@ exports.getMyProjects = catchAsyncErrors(async (req, res, next) => {
         select: {
           id: true,
           name: true,
+        },
+      },
+      rating: {
+        select: {
+          score: true,
+          comment: true,
         },
       },
       _count: {
@@ -141,6 +153,12 @@ exports.getMyAssignedProjects = catchAsyncErrors(async (req, res, next) => {
           name: true,
         },
       },
+      rating: {
+        select: {
+          score: true,
+          comment: true,
+        },
+      },
     },
     orderBy: {
       updatedAt: "desc",
@@ -169,6 +187,12 @@ exports.getProjectById = catchAsyncErrors(async (req, res, next) => {
           id: true,
           name: true,
           email: true,
+        },
+      },
+      rating: {
+        select: {
+          score: true,
+          comment: true,
         },
       },
       bids: {
@@ -262,7 +286,6 @@ exports.updateProject = catchAsyncErrors(async (req, res, next) => {
 
   sendRes(200, res, updatedProject, "Project updated successfully");
 });
-
 
 // upload deliveries by seller
 exports.addDeliverable = catchAsyncErrors(async (req, res, next) => {
@@ -395,6 +418,14 @@ exports.selectSeller = catchAsyncErrors(async (req, res, next) => {
         take: 1,
       },
     },
+    include: {
+      rating: {
+        select: {
+          score: true,
+          comment: true,
+        },
+      },
+    },
   });
 
   // Send email notification to seller
@@ -455,6 +486,14 @@ exports.markProjectAsCompleted = catchAsyncErrors(async (req, res, next) => {
         create: {
           status: "CONFIRM",
           comment: "Project marked as completed by seller",
+        },
+      },
+    },
+    include: {
+      rating: {
+        select: {
+          score: true,
+          comment: true,
         },
       },
     },

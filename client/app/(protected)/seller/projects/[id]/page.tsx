@@ -39,6 +39,7 @@ import {
   Download,
   FileIcon,
   X,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -106,9 +107,7 @@ export default function ProjectDetailsPage() {
   const onBidSubmit = async (data: BidFormValues) => {
     setIsSubmitting(true);
     try {
-      await dispatch(
-        asCreateBid(id as string, data) as any
-      );
+      await dispatch(asCreateBid(id as string, data) as any);
     } catch (error) {
       console.log(error);
     } finally {
@@ -142,9 +141,7 @@ export default function ProjectDetailsPage() {
         formData.append("files", selectedFiles[i]);
       }
 
-      await dispatch(
-        asUploadDeliverables(id as string, formData) as any
-      );
+      await dispatch(asUploadDeliverables(id as string, formData) as any);
     } catch (error) {
       console.log(error);
     } finally {
@@ -191,12 +188,15 @@ export default function ProjectDetailsPage() {
             In Progress
           </Badge>
         );
-        case "CONFIRM":
+      case "CONFIRM":
         return (
-          <Badge variant="outline" className="bg-blue-100 text-green-600 dark:bg-green-700 dark:text-green-200">
+          <Badge
+            variant="outline"
+            className="bg-blue-100 text-green-600 dark:bg-green-700 dark:text-green-200"
+          >
             Submited
           </Badge>
-        )
+        );
       case "COMPLETED":
         return (
           <Badge
@@ -282,16 +282,16 @@ export default function ProjectDetailsPage() {
                   <AlertDialogTrigger asChild>
                     <Button variant="outline" className="w-full">
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Mark as Completed
+                      Mark as Submited
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Mark project as completed?
+                        Mark project as Submited?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action will mark the project as completed. Make
+                        This action will mark the project as Submited. Make
                         sure you have reviewed all deliverables and are
                         satisfied with the work.
                       </AlertDialogDescription>
@@ -534,6 +534,42 @@ export default function ProjectDetailsPage() {
                       )}
                     </Button>
                   </form>
+                </CardContent>
+              </Card>
+            )}
+
+          {currentProject.status === "COMPLETED" &&
+            currentProject.deliverables &&
+            currentProject.deliverables.length > 0 &&
+            currentProject.rating && (
+              <Card className="mt-6">
+                <CardHeader className="font-semibold text-lg">
+                  <CardTitle>Your Review</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium mr-2">Score:</span>
+                    {currentProject?.rating &&
+                      [...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-6 w-6 ${
+                            i + 1 <= currentProject?.rating?.score
+                              ? "fill-primary text-primary"
+                              : "fill-muted text-muted-foreground"
+                          }`}
+                        />
+                      ))}
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      ({currentProject?.rating?.score}/5)
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium">Comment:</span>
+                    <p className="text-sm p-3 border rounded-md">
+                      {currentProject?.rating?.comment}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}

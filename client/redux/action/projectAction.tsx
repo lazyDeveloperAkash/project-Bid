@@ -99,6 +99,7 @@ export const asSelectSeller =
         `/project/${projectId}/select-seller`,
         { bidId }
       );
+      toast.success("Seller Selected");
       dispatch(setCurrentProject(data.data));
       dispatch(updateProject(data.data));
     } catch (error: any) {

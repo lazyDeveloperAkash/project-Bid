@@ -11,4 +11,7 @@ app.use("/project", require("./projectRoutes.js"));
 //bid routes
 app.use("/bid", require("./bidRoutes.js"));
 
+// rating routes
+app.use("/review", require("./reviewRoutes.js"));
+
 module.exports = app;

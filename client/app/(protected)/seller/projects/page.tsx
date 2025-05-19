@@ -100,7 +100,7 @@ export default function FindProjectsPage() {
                     <div>
                       <CardTitle className="line-clamp-1">{project.title}</CardTitle>
                       <CardDescription className="mt-1">
-                        Budget: ${project.budgetMin} - ${project.budgetMax}
+                        Budget: ₹{project.budgetMin} - ₹{project.budgetMax}
                       </CardDescription>
                     </div>
                     <Badge
