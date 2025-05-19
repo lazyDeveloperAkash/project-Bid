@@ -9,7 +9,7 @@ require("./config/database.js").connectDatabase();
 
 //cors
 const cors = require("cors");
-app.use(cors({origin: true, credentials: true}));
+app.use(cors({origin: "https://project-bid-git-main-akashs-projects-f9f05adc.vercel.app", credentials: true}));
 
 //Logger (tiny Data/small data)
 const logger = require("morgan");
