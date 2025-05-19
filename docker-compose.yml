@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    ports: -"5432:5432"
+    environment:
+      - POSTGRESS_USER = postgres
+      - POSTGRES_PASSWORD=your_secure_password
+      - POSTGRES_DB=your_db_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  server:
+    build: ./server
+    ports:
+      -"4006:4006"
+    environment:
+      - DATABASE_URL=postgresql://postgres:your_secure_password@postgres:5432/your_db_name
+      - NODE_ENV=production
+    depends_on:
+      - postgres
+    restart: always
+
+  client: 
+    build: ./client
+    ports:
+      -"3000:3000"
+    environment:
+      - - NEXT_PUBLIC_API_URL=http://server:4006/api/v1
+    depends_on:
+      - server
+    restart: always
+
+volumes: postgres_data
