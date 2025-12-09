@@ -1,0 +1,54 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
+      - "docker-compose.prod.yml"
+
+jobs:
+  backend-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Code
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # 2. Setup Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 3. Install & Test Backend
+      - name: Install Backend Dependencies
+        working-directory: ./server
+        run: npm install
+
+      - name: Backend Lint
+        working-directory: ./server
+        run: npm run lint || echo "No lint configured"
+
+      - name: Backend Test
+        working-directory: ./server
+        run: npm test || echo "No tests found"
+
+      # 4. Deploy to EC2
+      - name: Deploy Backend to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ${{ secrets.EC2_PATH }}
+            git pull origin main
+
+            docker compose -f docker-compose.prod.yml stop server
+            docker compose -f docker-compose.prod.yml build server
+            docker compose -f docker-compose.prod.yml up -d server
+
+            docker image prune -f

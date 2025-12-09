@@ -1,0 +1,19 @@
+# Don't copy node_modules into Docker image (will be installed fresh)
+node_modules
+# Avoid copying debug logs
+npm-debug.log
+# Don't copy environment files (security best practice)
+.env
+.env.local
+.env.development
+.env.production
+# Don't copy Git history
+.git
+.gitignore
+# Don't copy Docker files themselves
+Dockerfile
+.dockerignore
+# Don't copy any build artifacts
+dist
+build
+.next
