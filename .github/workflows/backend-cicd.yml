@@ -63,4 +63,4 @@ jobs:
 
       - name: Restart backend container
         run: |
-          docker compose -f docker-compose.prod.yml up -d server
+          docker compose -f docker-compose.yml up -d server
