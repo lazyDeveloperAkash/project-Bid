@@ -1,8 +1,10 @@
-require("dotenv").config({ path: "./.env", debug: true, encoding: "UTF-8" });
-
 const express = require("express");
 
 const app = express();
+
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 //connect databse
 require("./config/database.js").connectDatabase();
