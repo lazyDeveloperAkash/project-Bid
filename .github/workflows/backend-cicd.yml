@@ -58,9 +58,6 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
 
     steps:
-      - name: Navigate
-        run: cd project-Bid
-        
       - name: Pull latest backend image
         run: docker pull lazydeveloperakash/bid-backend:latest
 
