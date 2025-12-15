@@ -332,7 +332,6 @@ exports.addDeliverable = catchAsyncErrors(async (req, res, next) => {
 
   // Generate file URL
   const fileUrls = await uploadToS3(req);
-  console.log(fileUrls);
 
   const updatedProject = await prisma.project.update({
     where: { id: projectId },
