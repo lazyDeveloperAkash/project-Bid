@@ -6,7 +6,7 @@ services:
     ports:
       - "4006:4006"
     env_file:
-      - .env.production
+      - /home/ubuntu/envs/bid-backend.env
     restart: always
 
   client:
@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env.production
+      - /home/ubuntu/envs/bid-frontend.env
     depends_on:
       - server
     restart: always
