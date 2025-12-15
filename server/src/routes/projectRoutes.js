@@ -5,7 +5,7 @@ const { body, param, query } = require('express-validator');
 const { authenticate, authorize } = require('../middlewares/auth');
 const { validateRequest } = require('../middlewares/validator');
 const { cancelProject, confirmProjectCompletion, markProjectAsCompleted, selectSeller, updateProject, getProjectById, getMyAssignedProjects, getMyProjects, getAllProjects, createProject, addDeliverable } = require('../controllers/projectController');
-const { upload } = require('../services/uploadService');
+const { upload } = require('../utils/multer');
 
 const router = express.Router();
 

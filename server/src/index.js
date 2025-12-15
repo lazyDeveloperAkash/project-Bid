@@ -9,7 +9,15 @@ require("./config/database.js").connectDatabase();
 
 //cors
 const cors = require("cors");
-app.use(cors({origin: "https://project-bid-git-main-akashs-projects-f9f05adc.vercel.app", credentials: true}));
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV != "developement"
+        ? process.env.FRONTEND_PRODUCTION_URL
+        : process.env.FRONTEND_DEV_URL,
+    credentials: true,
+  })
+);
 
 //Logger (tiny Data/small data)
 const logger = require("morgan");
@@ -26,7 +34,7 @@ app.use(cookieParser());
 //routes
 app.use("/api/v1", require("./routes/index.js"));
 
-app.get("/", (req,res)=> res.json("hello"))
+app.get("/", (req, res) => res.json("hello"));
 
 //res handler
 // const responseHandler = require("./utils/sendRes.js");

@@ -8,7 +8,8 @@ const {
 const { catchAsyncErrors } = require("../middlewares/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { sendRes } = require("../utils/sendRes");
-const { getFileUrl, getFileUrls } = require("../services/uploadService");
+const { getFileUrl, getFileUrls } = require("../utils/multer");
+const { uploadToS3 } = require("../services/uploadToS3Service");
 
 // Create a new project
 exports.createProject = catchAsyncErrors(async (req, res, next) => {
@@ -330,7 +331,7 @@ exports.addDeliverable = catchAsyncErrors(async (req, res, next) => {
   }
 
   // Generate file URL
-  const fileUrls = getFileUrls(files, projectId, req);
+  const fileUrls = await uploadToS3(req);
   console.log(fileUrls);
 
   const updatedProject = await prisma.project.update({
