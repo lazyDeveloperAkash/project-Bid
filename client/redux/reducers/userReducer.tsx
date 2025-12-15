@@ -4,13 +4,15 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 export interface UserState {
   user: any;
   isLogin: boolean;
-  isLoading: boolean
+  isLoading: boolean;
+  fetchUserLoading: boolean
 }
 
 const initialState: UserState = {
   user: null,
   isLogin: false,
-  isLoading: false
+  isLoading: false,
+  fetchUserLoading: false
 };
 
 export const userSlice = createSlice({
@@ -27,11 +29,14 @@ export const userSlice = createSlice({
     },
     setLoading: (state, action) => {
       state.isLoading = action.payload
+    },
+    setFetchUserLoading: (state, action) => {
+      state.fetchUserLoading = action.payload
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addUser, removeUser, setLoading } = userSlice.actions;
+export const { addUser, removeUser, setLoading, setFetchUserLoading } = userSlice.actions;
 
 export default userSlice.reducer

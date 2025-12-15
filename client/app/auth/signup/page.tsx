@@ -26,8 +26,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authSignUp } from "@/redux/action/userAction";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z
   .object({
@@ -51,7 +52,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function SignUpPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, isLoading } = useSelector((state: any) => state.user);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -65,25 +66,19 @@ export default function SignUpPage() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
-    try {
-      const { confirmPassword, ...userData } = data;
-      if (data.password !== confirmPassword) {
-        toast.error("Password mismatched");
-        return;
-      }
+    const { confirmPassword, ...userData } = data;
+    if (data.password !== confirmPassword) {
+      toast.error("Password mismatched");
+      return;
+    }
 
-      await dispatch(authSignUp(userData) as any);
+    const user = await dispatch(authSignUp(userData) as any);
+    if (!user) return;
 
-      if (data.userType === "BUYER") {
-        router.push("/buyer/dashboard");
-      } else {
-        router.push("/seller/dashboard");
-      }
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Sign up failed");
-    } finally {
-      setIsLoading(false);
+    if (data.userType === "BUYER") {
+      router.push("/buyer/dashboard");
+    } else {
+      router.push("/seller/dashboard");
     }
   };
 
@@ -197,7 +192,11 @@ export default function SignUpPage() {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create account"}
+                {isLoading ? (
+                  <Loader2 className="h-8 w-8 animate-spin text-primary-foreground" />
+                ) : (
+                  "Create account"
+                )}
               </Button>
             </form>
           </Form>

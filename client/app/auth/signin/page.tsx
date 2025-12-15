@@ -1,31 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import { useDispatch } from "react-redux"
-import { authSignIn } from "@/redux/action/userAction"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useDispatch, useSelector } from "react-redux";
+import { authSignIn } from "@/redux/action/userAction";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
   // role: z.enum(["buyer", "seller"], { required_error: "Please select a role" }),
-})
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 export default function SignInPage() {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state: any) => state.user);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -34,32 +50,30 @@ export default function SignInPage() {
       password: "",
       // role: "buyer",
     },
-  })
+  });
 
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true)
-    try {
-      const user = await dispatch(authSignIn(data) as any)
+    const user = await dispatch(authSignIn(data) as any);
+    console.log(user);
 
-        // Redirect based on role
-        if (user.userType === "BUYER") {
-          router.push("/buyer/dashboard")
-        } else {
-          router.push("/seller/dashboard")
-        }
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Sign in failed")
-    } finally {
-      setIsLoading(false)
+    if (!user) return;
+
+    // Redirect based on role
+    if (user.userType === "BUYER") {
+      router.push("/buyer/dashboard");
+    } else {
+      router.push("/seller/dashboard");
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardDescription>
+            Enter your credentials to access your account
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -116,7 +130,11 @@ export default function SignInPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -124,7 +142,11 @@ export default function SignInPage() {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? (
+                  <Loader2 className="h-8 w-8 animate-spin text-primary-foreground" />
+                ) : (
+                  "Sign in"
+                )}
               </Button>
             </form>
           </Form>
@@ -132,12 +154,15 @@ export default function SignInPage() {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="underline underline-offset-4 hover:text-primary">
+            <Link
+              href="/auth/signup"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Sign up
             </Link>
           </div>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

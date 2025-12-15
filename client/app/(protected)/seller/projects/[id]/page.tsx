@@ -85,7 +85,6 @@ export default function ProjectDetailsPage() {
     (state: any) => state.projects
   );
   const { user } = useSelector((state: any) => state.user);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -104,15 +103,8 @@ export default function ProjectDetailsPage() {
     },
   });
 
-  const onBidSubmit = async (data: BidFormValues) => {
-    setIsSubmitting(true);
-    try {
-      await dispatch(asCreateBid(id as string, data) as any);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onBidSubmit = (data: BidFormValues) => {
+    dispatch(asCreateBid(id as string, data) as any);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +211,7 @@ export default function ProjectDetailsPage() {
   // Check if the current user is the selected seller for this project
   const isSelectedSeller = currentProject?.sellerId === user?.id;
 
-  if (isLoading || !currentProject) {
+  if (!currentProject) {
     return (
       <div className="flex h-[calc(100vh-64px)] w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -291,9 +283,9 @@ export default function ProjectDetailsPage() {
                         Mark project as Submited?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action will mark the project as Submited. Make
-                        sure you have reviewed all deliverables and are
-                        satisfied with the work.
+                        This action will mark the project as Submited. Make sure
+                        you have reviewed all deliverables and are satisfied
+                        with the work.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -398,9 +390,9 @@ export default function ProjectDetailsPage() {
                     <Button
                       type="submit"
                       className="w-full"
-                      disabled={isSubmitting}
+                      disabled={isLoading}
                     >
-                      {isSubmitting ? (
+                      {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Submitting...

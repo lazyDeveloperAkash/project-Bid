@@ -13,7 +13,7 @@ export default function ProtectedLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user, isLoading } = useSelector((state: any) => state.user);
+  const { user, fetchUserLoading } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const router = useRouter();
   const [isInitializing, setIsInitializing] = useState(true);
@@ -40,9 +40,9 @@ export default function ProtectedLayout({
         router.push("/seller/dashboard");
       }
     }
-  }, [user, isLoading, isInitializing, router]);
+  }, [user, fetchUserLoading, isInitializing, router]);
 
-  if (isInitializing || isLoading ) {
+  if (isInitializing || fetchUserLoading ) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

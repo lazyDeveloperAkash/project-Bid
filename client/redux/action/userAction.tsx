@@ -1,6 +1,6 @@
 // src/store/auth/authActions.ts
 import axios from "@/lib/axios-config";
-import { addUser, removeUser, setLoading } from "../reducers/userReducer";
+import { addUser, removeUser, setLoading, setFetchUserLoading } from "../reducers/userReducer";
 import { toast } from "sonner";
 
 export const authSignIn =
@@ -48,7 +48,7 @@ export const authSignUp =
 export const authFetchCurrent =
   (): ((dispatch: any) => Promise<boolean>) => async (dispatch: any) => {
     try {
-      dispatch(setLoading(true));
+      dispatch(setFetchUserLoading(true));
       const { data } = await axios.get("/user/profile");
 
       await dispatch(addUser(data.data));
@@ -58,7 +58,7 @@ export const authFetchCurrent =
       // toast.error(error.response?.data?.message || "Session expired");
       return false;
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setFetchUserLoading(false));
     }
   };
 

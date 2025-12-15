@@ -46,6 +46,7 @@ import {
 import { Bid } from "@/redux/reducers/projectReducer";
 import { Textarea } from "@/components/ui/textarea";
 import { asUploadReview } from "@/redux/action/reviewAction";
+import ProjectDetailsSkeleton from "@/components/skeleton/buyer/ProjectDetailsSkeleton"
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -55,7 +56,6 @@ export default function ProjectDetailsPage() {
     (state: any) => state.projects
   );
   const [selectedBidId, setSelectedBidId] = useState<string | null>(null);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
   const [comment, setComment] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
 
@@ -79,15 +79,8 @@ export default function ProjectDetailsPage() {
     }
   };
 
-  const handleCompleteProject = async () => {
-    setIsUpdatingStatus(true);
-    try {
-      await dispatch(asUpdateProjectStatus(id as string) as any);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsUpdatingStatus(false);
-    }
+  const handleCompleteProject = () => {
+    dispatch(asUpdateProjectStatus(id as string) as any);
   };
 
   const formatDate = (dateString: string) => {
@@ -160,10 +153,10 @@ export default function ProjectDetailsPage() {
     }
   };
 
-  if (isLoading || !currentProject) {
+  if (!currentProject) {
     return (
       <div className="flex h-[calc(100vh-64px)] w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <ProjectDetailsSkeleton/>
       </div>
     );
   }
@@ -255,9 +248,9 @@ export default function ProjectDetailsPage() {
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleCompleteProject}
-                        disabled={isUpdatingStatus}
+                        disabled={isLoading}
                       >
-                        {isUpdatingStatus ? (
+                        {isLoading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Updating...
@@ -329,75 +322,78 @@ export default function ProjectDetailsPage() {
             )}
 
           {currentProject.status === "COMPLETED" &&
-          currentProject.deliverables &&
-          currentProject.deliverables.length > 0 && (
-          currentProject.rating ? (
-            <Card className="mt-6">
-              <CardHeader className="font-semibold text-lg">
-                <CardTitle>Your Review</CardTitle>
-                <p></p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium mr-2">Score:</span>
-                  {currentProject?.rating &&
-                    [...Array(5)].map((_, i) => (
+            currentProject.deliverables &&
+            currentProject.deliverables.length > 0 &&
+            (currentProject.rating ? (
+              <Card className="mt-6">
+                <CardHeader className="font-semibold text-lg">
+                  <CardTitle>Your Review</CardTitle>
+                  <p></p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium mr-2">Score:</span>
+                    {currentProject?.rating &&
+                      [...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-6 w-6 ${
+                            i + 1 <= currentProject?.rating?.score
+                              ? "fill-primary text-primary"
+                              : "fill-muted text-muted-foreground"
+                          }`}
+                        />
+                      ))}
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      ({currentProject?.rating?.score}/5)
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium">Comment:</span>
+                    <p className="text-sm p-3 border rounded-md">
+                      {currentProject?.rating?.comment}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="mt-6">
+                <CardHeader className="flex flex-col gap-1 font-semibold text-lg">
+                  Rate & Write Review for {currentProject?.title || "Project"}
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
+                  <div className="flex gap-5">
+                    {[1, 2, 3, 4, 5].map((star) => (
                       <Star
-                        key={i}
+                        key={star}
                         className={`h-6 w-6 ${
-                          i + 1 <= currentProject?.rating?.score
+                          star <= rating
                             ? "fill-primary text-primary"
                             : "fill-muted text-muted-foreground"
                         }`}
+                        onClick={() => setRating(star)}
                       />
                     ))}
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    ({currentProject?.rating?.score}/5)
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <span className="text-sm font-medium">Comment:</span>
-                  <p className="text-sm p-3 border rounded-md">
-                    {currentProject?.rating?.comment}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="mt-6">
-              <CardHeader className="flex flex-col gap-1 font-semibold text-lg">
-                Rate & Write Review for {currentProject?.title || "Project"}
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                <div className="flex gap-5">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-6 w-6 ${
-                        star <= rating
-                          ? "fill-primary text-primary"
-                          : "fill-muted text-muted-foreground"
-                      }`}
-                      onClick={() => setRating(star)}
-                    />
-                  ))}
-                </div>
+                  </div>
 
-                <h4 className="text-lg font-semibold">Review</h4>
-                <Textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Write your review here..."
-                />
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button onClick={handleReviewSubmit} disabled={rating === 0 || comment === ""}>
-                  Post Review
-                  <SendHorizonal className="text-white text-sm ml-1" />
-                </Button>
-              </CardFooter>
-            </Card>)
-          )}
+                  <h4 className="text-lg font-semibold">Review</h4>
+                  <Textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Write your review here..."
+                  />
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button
+                    onClick={handleReviewSubmit}
+                    disabled={rating === 0 || comment === ""}
+                  >
+                    Post Review
+                    <SendHorizonal className="text-white text-sm ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
 
           {currentProject.status === "COMPLETED" &&
             currentProject.deliverables &&

@@ -11,6 +11,7 @@ import Link from "next/link"
 import { useDispatch, useSelector } from "react-redux"
 import { asFetchProjects } from "@/redux/action/projectAction"
 import { Project } from "@/redux/reducers/projectReducer"
+import ProjectSkeleton from "@/components/skeleton/seller/ProjectSkeleton"
 
 export default function FindProjectsPage() {
   const dispatch = useDispatch()
@@ -76,9 +77,7 @@ export default function FindProjectsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-10">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
+        <ProjectSkeleton/>
       ) : filteredProjects.length === 0 ? (
         <Card>
           <CardHeader>
