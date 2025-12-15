@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.prod
+    image: lazydeveloperakash/bid-backend:latest
     ports:
       - "4006:4006"
     env_file:
@@ -12,13 +10,11 @@ services:
     restart: always
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.prod
+    image: lazydeveloperakash/bid-frontend:latest
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://YOUR_DOMAIN:4006/api/v1
+    env_file:
+      - .env.production
     depends_on:
       - server
     restart: always
