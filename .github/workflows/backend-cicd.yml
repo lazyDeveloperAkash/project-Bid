@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: aws-ec2-buyer-seller
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
       - name: Pull latest backend image
